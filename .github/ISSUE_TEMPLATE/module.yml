@@ -1,0 +1,19 @@
+name: Module request
+description: Plug a new tool / service / API / agent / skill into Margaux
+labels: ["type:module"]
+body:
+  - type: input
+    id: name
+    attributes: { label: Module name, placeholder: visibility-tracker }
+    validations: { required: true }
+  - type: textarea
+    id: what
+    attributes: { label: What it does and who uses it }
+    validations: { required: true }
+  - type: textarea
+    id: integration
+    attributes: { label: Integration, description: "Port code in, or call it as a remote service? Repo/URL, owner, stack." }
+  - type: textarea
+    id: data
+    attributes: { label: Data and secrets, description: "Which data does it read/write? Any personal or client data? Which API keys (names only, never values)?" }
+    validations: { required: true }

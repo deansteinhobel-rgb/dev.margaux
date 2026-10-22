@@ -1,0 +1,35 @@
+# --- Secrets: never commit. .env.example is the only env file allowed in git.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+service-account*.json
+credentials*.json
+.vercel
+supabase/.temp
+supabase/.branches
+
+# --- Claude Code: personal settings stay local
+.claude/settings.local.json
+CLAUDE.local.md
+
+# --- Dependencies / builds
+node_modules/
+.pnpm-store/
+.next/
+out/
+dist/
+build/
+coverage/
+.turbo/
+*.tsbuildinfo
+
+# --- OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+*.swp
+*.log

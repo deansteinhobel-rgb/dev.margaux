@@ -1,0 +1,7 @@
+version: 2
+updates:
+  # npm ecosystem gets added in batch 1, once package.json exists.
+  - package-ecosystem: github-actions
+    directory: /
+    target-branch: dev
+    schedule: { interval: weekly }

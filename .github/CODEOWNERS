@@ -1,0 +1,9 @@
+# Default owner. Swap for the B&B org team (e.g. @bordeaux-burgundy/margaux-core) after the repo transfer.
+*                       @deansteinhobel-rgb
+# Security-sensitive paths always need an owner review
+/SECURITY.md            @deansteinhobel-rgb
+/supabase/              @deansteinhobel-rgb
+/.github/               @deansteinhobel-rgb
+/vercel.json            @deansteinhobel-rgb
+/.mcp.json              @deansteinhobel-rgb
+/.claude/               @deansteinhobel-rgb

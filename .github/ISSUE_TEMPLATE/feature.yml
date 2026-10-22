@@ -1,0 +1,17 @@
+name: Feature
+description: Something new for Margaux
+labels: ["type:feature"]
+body:
+  - type: textarea
+    id: problem
+    attributes: { label: Problem / goal, description: Who is this for and what should they be able to do? }
+    validations: { required: true }
+  - type: textarea
+    id: scope
+    attributes: { label: Scope, description: In scope / out of scope. Link Figma + Notion. }
+  - type: dropdown
+    id: module
+    attributes: { label: Module, options: [core, lumaux, tool-2, tool-3, new module, unsure] }
+  - type: textarea
+    id: done
+    attributes: { label: Definition of done }

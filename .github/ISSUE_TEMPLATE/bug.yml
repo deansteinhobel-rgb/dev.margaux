@@ -1,0 +1,15 @@
+name: Bug
+description: Something is broken
+labels: ["type:bug"]
+body:
+  - type: dropdown
+    id: env
+    attributes: { label: Where, options: [dev.margaux, margaux (live), local, preview] }
+    validations: { required: true }
+  - type: textarea
+    id: steps
+    attributes: { label: Steps to reproduce, description: "Don't paste secrets, tokens or client data." }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: Expected vs actual }
