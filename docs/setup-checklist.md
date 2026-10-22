@@ -26,11 +26,12 @@ Owner = who has to click it. Anything needing an account or a payment can't be d
 
 ## Supabase (Bordeaux & Burgundy org)
 
-- [ ] Decide the projects: `margaux-dev` + `margaux-prod`, region `eu-west-2` (London) for UK/GDPR.
+- [ ] Create `margaux-dev` + `margaux-prod` in `eu-west-2` (London). Agreed 2026-10-22; still to be created because the MCP call timed out on cost confirmation.
 - [ ] Auth → Google provider limited to the B&B Workspace domain. Turn off email sign-ups on prod.
 - [ ] Turn on MFA. Custom SMTP for auth emails.
 - [ ] Prod: Pro plan, PITR backups, network restrictions, SSL enforcement.
-- [ ] Decide on reusing the context bank (`docs/context-bank.md`).
+- [ ] Rename the "Lumaux Context Bank" project to "Margaux Context Bank" (Project Settings → General). Reuse agreed and Margaux entries seeded.
+- [ ] Delete or leave paused the old "Margaux" project in us-west-2. It isn't used.
 
 ## The two other tools
 

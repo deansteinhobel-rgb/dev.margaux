@@ -26,6 +26,7 @@ Skills are copied into `.claude/skills/` at pinned commits by `scripts/sync-skil
 | Ready-made components | 21st MCP | 21st.dev |
 | Codebase map and code flows | `graphify` | safishamsi/graphify (skill file; CLI per developer) |
 | Learn from a video | `watch` | bradautomates/claude-video |
+| Fast typed AI judgments in Margaux features (route, rank, classify, extract) using Jev | `typesafe-ai` | typesafe-ai/skills |
 | Library and framework docs | Context7 MCP | upstash |
 | Anything on the live web | Firecrawl MCP | firecrawl |
 | What people said in the last 30 days (Reddit, X, YouTube, HN) | `last30days` | mvanhorn (personal plugin, see below) |
@@ -37,6 +38,7 @@ Skills are copied into `.claude/skills/` at pinned commits by `scripts/sync-skil
 - **Caveman vs humanizer:** caveman only changes how Claude talks in chat. Code, comments, docs, commits, PR text and product copy are always normal, and copy goes through humanizer.
 - **Design:** the Figma board sets the mood → `ui-ux-pro-max` turns it into a design system once (tokens, type scale, palette, chart rules) → `taste` builds and critiques each screen inside that system → 21st supplies a component when we need one, restyled to our tokens.
 - **Web:** Context7 for docs, Firecrawl for everything else on the web. Built-in WebSearch and WebFetch are switched off in `.claude/settings.json`, so there's one web tool and no fallback.
+- **Jev vs Claude in the product:** Jev handles short typed decisions where you'd otherwise prompt an LLM and parse the answer (which bucket, which model, how relevant, is this safe). Claude handles anything that writes or reasons at length. Jev isn't used to write our code.
 - **Parallel** is a **product API** for Margaux's own features (visibility research at scale), not a dev tool. It lives in a module, not in `.mcp.json`.
 
 ## Removed on purpose
@@ -55,6 +57,7 @@ Skills are copied into `.claude/skills/` at pinned commits by `scripts/sync-skil
 - **graphify CLI:** `uv tool install graphifyy==0.9.94` (note the double y). Don't run `graphify claude install`: it edits CLAUDE.md and adds a hook. The skill is already in the repo.
 - **watch:** needs `ffmpeg` and `yt-dlp`. Don't set `GEMINI_API_KEY` for internal or client videos, because the whole video goes to Google.
 - **last30days** is personal research, not project tooling, so it stays out of the repo. Install it with `/plugin marketplace add mvanhorn/last30days-skill` then `/plugin install last30days`. Always run with `--no-browser-cookies`. Keys go in your shell, never in the repo.
+- **typesafe-ai** reads TypeSafe's live docs through Firecrawl (WebFetch is off). `TYPESAFE_API_KEY` is server-only and lives in Vercel.
 - **MCP keys:** `CONTEXT7_API_KEY`, `FIRECRAWL_API_KEY`, `TWENTY_FIRST_API_KEY` go in your shell profile.
 
 ## Updating a skill

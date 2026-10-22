@@ -8,11 +8,15 @@ It doesn't make Claude's context window bigger. What it does is let Claude **fet
 
 ## Where
 
-The existing **Lumaux Context Bank** project (`context_entries`, `context_entry_history`) already has the right shape: `area`, `kind` (rule / decision / how_it_works / gotcha / mapping / todo), `files`, `tags`, `superseded_by`, full-text `search`. The proposal is to reuse it for Margaux, with Margaux entries under `margaux-*` areas, and rename the project to "Margaux Context Bank" once Lumaux is merged in. (Decision pending.)
+Supabase project `zcznmkqzmnrjdwosgprb`, which is being renamed from "Lumaux Context Bank" to **Margaux Context Bank**. It has two tables: `context_entries` and `context_entry_history`. Each entry has an `area`, a `kind` (rule, decision, how_it_works, gotcha, mapping or todo), `files`, `tags`, `superseded_by` and a full-text `search` column.
+
+- Margaux entries use `margaux-*` areas. They were seeded on 2026-10-22 with the setup decisions.
+- Unprefixed areas are the existing Lumaux context. That becomes the Lumaux module's context once it's ported.
 
 ## Rules
 
 - Entries are internal engineering knowledge only. **No secrets, no client PII, no client data.**
 - RLS stays on. Only Supabase MCP (team members' own auth) and the server-side sync job can read and write.
-- `CLAUDE.md`, `SECURITY.md` and `docs/**` are mirrored in on merge to `dev`, so the repo stays the source of truth and the bank stays searchable.
+- Planned for batch 1: a GitHub Action mirrors `CLAUDE.md`, `SECURITY.md` and `docs/**` into the bank on merge to `dev`. The repo stays the source of truth, and the bank stays searchable.
+- Lookup example: `select title, body from context_entries where area like 'margaux-%' and search @@ websearch_to_tsquery('english', 'auth') and superseded_by is null;`
 - Superseded decisions are linked, never deleted.

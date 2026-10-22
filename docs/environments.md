@@ -4,7 +4,7 @@
 |---|---|---|---|---|
 | Git | any branch | PR branch | `dev` | `main` |
 | Vercel env | Development | Preview | Preview (branch `dev`, custom domain) | Production |
-| Supabase | margaux-dev | margaux-dev | margaux-dev | margaux-prod |
+| Supabase (eu-west-2, London) | margaux-dev | margaux-dev | margaux-dev | margaux-prod |
 | Access | you | Vercel Deployment Protection | Vercel Deployment Protection (team only) | Public pages + Supabase Auth |
 | Indexing | n/a | noindex | **noindex** (header + robots) | indexable public pages only |
 | `MARGAUX_ENV` | development | dev | dev | production |

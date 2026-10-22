@@ -30,6 +30,7 @@ SKILLS=(
   "nextlevelbuilder/ui-ux-pro-max-skill|076a2b3a31394ad788afaa71f55d0bf789e7b3ec|.claude/skills/ui-ux-pro-max|ui-ux-pro-max"
   "bradautomates/claude-video|03ceb42f7fa2c4439aca01752118044baabffb8f|skills/watch|watch"
   "safishamsi/graphify|c588b72d936927790a87ad009955078ed40562a3|graphify/skill.md|graphify"
+  "typesafe-ai/skills|65a39f393687675ce170e6094757de20370365b9|skills/typesafe-ai|typesafe-ai"
 )
 
 fetch() { # repo sha -> checkout dir
