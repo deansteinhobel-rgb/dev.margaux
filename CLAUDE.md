@@ -14,11 +14,14 @@ Keep this file short. Detailed context lives in `docs/` and in the Supabase cont
 
 ## How we work
 
-- Complex or unclear feature → run `/grill-me` before writing code.
-- Plans and implementation follow the superpowers workflow (brainstorm → plan → TDD → review). See `docs/skills.md` for which skill owns which job.
-- All user-facing copy goes through the humanizer skill. Caveman-style terse output is for chat only, never for copy, docs or commit messages.
-- UI work follows the Figma file and the design skills listed in `docs/skills.md`.
-- Use Context7 for library docs and Firecrawl for live web pages. Don't rely on memory for APIs that change.
+One skill per job. The full table is in `docs/skills.md`. Never reach for a different skill or tool for a job that already has an owner.
+
+- Complex or unclear feature → `grill-me` → `writing-plans` → `subagent-driven-development`. There's no brainstorming or executing-plans skill; ignore upstream mentions of them.
+- Code: `test-driven-development`, `systematic-debugging`, `verification-before-completion`, superpowers review skills, `/security-review`. `ponytail` keeps changes small but never cuts security, validation or tests.
+- UI: the Figma board is the style guide → `ui-ux-pro-max` for the design system → `taste` for each screen → 21st MCP for components.
+- Copy: everything user-facing goes through `humanizer`. `caveman` only affects chat replies, never files, commits or PRs.
+- Web: Context7 for library docs, Firecrawl for everything else. Don't rely on memory for APIs that change.
+- Code flows: `graphify`.
 - Commits: Conventional Commits (`feat:`, `fix:`, `chore:`, `docs:`, `refactor:`, `test:`).
 
 ## Repo map

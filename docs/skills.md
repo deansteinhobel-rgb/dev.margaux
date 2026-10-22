@@ -1,53 +1,71 @@
 # Claude Code skills and MCP servers
 
-Status: **proposal, awaiting decisions** (marked ❓). Checked 2026-10-22. Once agreed, we enable plugins for the whole team through `.claude/settings.json` (`extraKnownMarketplaces` + `enabledPlugins`), so everyone gets the same setup automatically. Install everything one way only (plugin marketplace). Mixing it with `npx skills add` duplicates skills.
+**Rule: one skill per job. No skill banks, no fallbacks, no plugin hooks.**
 
-## Who owns which job (one owner per job)
+Skills are copied into `.claude/skills/` at pinned commits by `scripts/sync-skills.sh`, then reviewed and committed. Everyone who clones the repo gets exactly the same set, and that includes cloud sessions, where plugins don't load. Nothing runs at session start, and nothing updates itself without someone reviewing it.
 
-| Job | Owner | Not used for this job |
+## Who owns which job
+
+| Job | Skill / tool | Source |
 |---|---|---|
-| Requirements on complex or unclear work | `/grill-me` (mattpocock/skills) | superpowers `brainstorming`, Addy `interview-me` |
-| Planning → execution | superpowers (`writing-plans`, `executing-plans`, `subagent-driven-development`) | Addy `planning-and-task-breakdown` |
-| Multi-session / epic planning | `wayfinder` (mattpocock/skills, manual only) | — |
-| TDD / debugging / verification | superpowers | Addy and Pocock duplicates |
-| Code review | superpowers `requesting-code-review` + built-in `/code-review`, `/security-review` | caveman-review, ponytail-review, Addy and Pocock review |
-| "Keep it simple" bias | ponytail at `lite` level ❓ | — |
-| Production automation | Addy agent-skills, **selected only**: `security-and-hardening`, `ci-cd-and-automation`, `observability-and-instrumentation`, `performance-optimization`, `shipping-and-launch`, `documentation-and-adrs` | the rest of Addy's set |
-| Visual design | taste-skill for public and marketing pages; UI/UX Pro Max core skill as a lookup (palettes, fonts, charts) for app screens | Pro Max `slides` / `brand` / `design` sub-skills (clash with Figma and B&B deck skills; call paid APIs) |
-| Components | 21st MCP + shadcn/ui | — |
-| Design source of truth | Figma MCP | — |
-| Copy | humanizer (every piece of user-facing text) | caveman |
-| Token saving | caveman **on demand only**, chat output only ❓ | never in copy, docs, commits, PR text |
-| Codebase map | Graphify ❓ (or Understand-Anything, but not both) | — |
-| Library docs | Context7 | web search |
-| Live web pages | Firecrawl | — |
-| Web research at scale (product feature) | Parallel API | — |
-| Trend / social research | last30days | — |
-| Learning from videos | claude-video `/watch` | — |
-| Fast classify / route / rank | Jev (TypeSafe AI) ❓ to be confirmed | — |
+| Complex or unclear feature: interrogate until there's shared understanding | `grill-me` | mattpocock/skills (that one skill only) |
+| Turn the agreed design into a step-by-step plan | `writing-plans` | obra/superpowers |
+| Execute the plan with subagents | `subagent-driven-development` | obra/superpowers |
+| Tests first | `test-driven-development` | obra/superpowers |
+| Bugs | `systematic-debugging` | obra/superpowers |
+| Prove it works before saying "done" | `verification-before-completion` | obra/superpowers |
+| Ask for a review / handle review feedback | `requesting-code-review` / `receiving-code-review` | obra/superpowers |
+| Isolated workspaces for parallel work / wrap up a branch into a PR | `using-git-worktrees` / `finishing-a-development-branch` | obra/superpowers |
+| Security audit of a change | built-in `/security-review` | Claude Code |
+| Smallest change that fully solves it; no gold-plating | `ponytail` | DietrichGebert/ponytail (skill only, no hooks) |
+| Short chat replies to save tokens | `caveman` (on demand: `/caveman`) | JuliusBrussee/caveman (skill only, no hooks) |
+| All user-facing copy | `humanizer` | blader/humanizer |
+| Design system: palette, type, style, chart choices | `ui-ux-pro-max` | nextlevelbuilder (core skill only) |
+| Building and critiquing screens and pages | `taste` | Leonxlnx/taste-skill |
+| Style reference | Figma board (guide, not a spec) | Figma MCP |
+| Ready-made components | 21st MCP | 21st.dev |
+| Codebase map and code flows | `graphify` | safishamsi/graphify (skill file; CLI per developer) |
+| Learn from a video | `watch` | bradautomates/claude-video |
+| Library and framework docs | Context7 MCP | upstash |
+| Anything on the live web | Firecrawl MCP | firecrawl |
+| What people said in the last 30 days (Reddit, X, YouTube, HN) | `last30days` | mvanhorn (personal plugin, see below) |
 
-## Clashes found
+## Hand-offs, so jobs don't overlap
 
-1. **Three skills inject rules at every session start.** Superpowers, ponytail and caveman each add a SessionStart hook, and ponytail and caveman also add per-prompt and per-subagent hooks. Superpowers says "brainstorm and plan first", ponytail says "smallest possible change", caveman says "be terse". With all three always on, Claude gets mixed instructions on every turn. Fix: superpowers stays always-on as the methodology. Ponytail runs at `lite` level, or off and invoked per task. Caveman is never left on.
-2. **Superpowers forces brainstorming before any creative work**, which overlaps `/grill-me`. Fix: `/grill-me` runs first on complex or unclear features (your rule). Superpowers then plans from the grill output. On small tasks we tell it to skip brainstorming.
-3. **TDD, code review, debugging and planning are duplicated** across superpowers, Addy Osmani and Matt Pocock (Addy and superpowers even share the skill name `test-driven-development`). Fix: install only the Addy skills listed above.
-4. **Ponytail vs superpowers / Addy philosophy.** "No abstractions, one line over fifty" works against TDD, observability and hardening. Fix: security and tests always win. Ponytail only stops gold-plating.
-5. **Caveman vs humanizer.** One produces terse grunts, the other natural prose. Fix: caveman never touches anything a human outside the team reads.
-6. **Three design skills auto-trigger on UI work** (taste, Pro Max, Addy `frontend-ui-engineering`). Fix: as in the table. The Figma file beats all of them.
-7. **Graphify and Understand-Anything both rebuild a code graph and steer how Claude reads files** (Graphify adds a PreToolUse hook and edits CLAUDE.md; Understand-Anything adds SessionStart/PostToolUse hooks). Running both doubles token spend. Fix: pick one. Recommended: **Graphify** (local tree-sitter, deterministic, cheaper). Its CLAUDE.md section has to stay short.
-8. **Web tools overlap** (Firecrawl, Parallel, WebSearch, last30days). Fix: as in the table.
-9. **"Wayfinder" is a planning skill, not a code-flow tool.** For code flows, Graphify covers it.
+- **Planning:** `grill-me` → `writing-plans` → `subagent-driven-development`. There's no brainstorming skill and no inline-execution skill. If a superpowers skill mentions `brainstorming` or `executing-plans`, that's upstream text: use `grill-me` and `subagent-driven-development` instead.
+- **Ponytail vs TDD:** ponytail decides *how much code* to write. TDD decides *how* to write it. Non-trivial logic always gets a test, and ponytail agrees. Ponytail never cuts security, validation or tests.
+- **Caveman vs humanizer:** caveman only changes how Claude talks in chat. Code, comments, docs, commits, PR text and product copy are always normal, and copy goes through humanizer.
+- **Design:** the Figma board sets the mood → `ui-ux-pro-max` turns it into a design system once (tokens, type scale, palette, chart rules) → `taste` builds and critiques each screen inside that system → 21st supplies a component when we need one, restyled to our tokens.
+- **Web:** Context7 for docs, Firecrawl for everything else on the web. Built-in WebSearch and WebFetch are switched off in `.claude/settings.json`, so there's one web tool and no fallback.
+- **Parallel** is a **product API** for Margaux's own features (visibility research at scale), not a dev tool. It lives in a module, not in `.mcp.json`.
 
-## Security notes before rollout
+## Removed on purpose
 
-- Several of these run code on every session through hooks: superpowers, ponytail, caveman, Understand-Anything, claude-video, Graphify. Someone reads each hook before we enable it team-wide.
-- Understand-Anything's SessionStart hook tells Claude to act "without asking the user". That's another reason to prefer Graphify.
-- Use the caveman **skill/plugin only**, not the `@caveman-ai/cli`. The CLI has telemetry on by default and an optional cloud mode that sends prompts and CLAUDE.md content off-machine.
-- Ponytail: leave its `webhookUrl` empty. It writes a local cost ledger in `~/.config/ponytail`.
-- last30days: run with `--no-browser-cookies`. Its keys go in your shell env, never in the repo.
-- claude-video: don't set `GEMINI_API_KEY` for internal or client videos, since the whole video is then sent to Google.
-- Never pass client data to Firecrawl, Parallel, 21st or Context7. Their queries leave our infrastructure.
+| What | Why |
+|---|---|
+| Addy Osmani agent-skills, the Matt Pocock bundle (except grill-me) | Skill banks that duplicate planning, TDD, review and debugging |
+| superpowers `brainstorming`, `executing-plans`, `dispatching-parallel-agents`, `using-superpowers`, `writing-skills` | Duplicate grill-me or subagent-driven-development, or meta and bootstrap skills that force a workflow |
+| Understand Anything | Same job as graphify, with heavier session hooks, and its SessionStart hook tells Claude to act "without asking the user" |
+| Wayfinder | A planning skill (not code flows). It duplicates writing-plans. Graphify covers code flows. |
+| Caveman and ponytail plugin extras (cavecrew, caveman-review, safe-refactor, ponytail-review, …) | Duplicate superpowers |
+| UI/UX Pro Max extras (`design`, `brand`, `slides`, `banner-design`, `ui-styling`) | Duplicate taste and the Figma/deck tools; some call paid image APIs |
 
-## MCP servers (`.mcp.json`, shared)
+## Per-developer setup
 
-All keys come from each developer's shell environment through `${VAR}` expansion. No key is ever written into the file. Supabase MCP gets added once the dev project exists, scoped to `margaux-dev` and `read_only=true`. It never points at prod.
+- **graphify CLI:** `uv tool install graphifyy==0.9.94` (note the double y). Don't run `graphify claude install`: it edits CLAUDE.md and adds a hook. The skill is already in the repo.
+- **watch:** needs `ffmpeg` and `yt-dlp`. Don't set `GEMINI_API_KEY` for internal or client videos, because the whole video goes to Google.
+- **last30days** is personal research, not project tooling, so it stays out of the repo. Install it with `/plugin marketplace add mvanhorn/last30days-skill` then `/plugin install last30days`. Always run with `--no-browser-cookies`. Keys go in your shell, never in the repo.
+- **MCP keys:** `CONTEXT7_API_KEY`, `FIRECRAWL_API_KEY`, `TWENTY_FIRST_API_KEY` go in your shell profile.
+
+## Updating a skill
+
+Change the SHA in `scripts/sync-skills.sh`, run it, and read the diff, including any new scripts. Then open a PR. CODEOWNERS makes `.claude/` changes need an owner review.
+
+## Security notes
+
+- Every vendored script was checked for network calls. All of them match each skill's stated purpose:
+  - taste fetches public-domain images (Met, Art Institute, Wikimedia, Openverse, archive.org).
+  - watch calls transcription APIs only when you set those keys.
+  - ui-ux-pro-max is offline.
+- taste's preview pages load GSAP and Lenis from a CDN. In the app, those get installed through npm.
+- Never send client data to Firecrawl, 21st or Context7. Queries leave our infrastructure.
